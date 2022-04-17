@@ -20,10 +20,10 @@ The class contains a method ('get_data_loader') to return a data_loader for trai
 
 '''
 class bert_data:
-  def __init__(self, data_folder = 'data', train_file = 'train.csv', test_file = 'test.csv', val_file = None):
+  def __init__(self, data_folder = 'data', train_file = 'train.csv', test_file = 'test.csv', val_file = None, tokenizer_type = 'bert-base-uncased'):
 
-    print(os.getcwd())
-    self.tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+    #print(os.getcwd())
+    self.tokenizer = BertTokenizer.from_pretrained(tokenizer_type)
 
     if val_file is not None:
       self.dataset = load_dataset(data_folder, data_files = {'train' : train_file, 'test': test_file, 'valid': val_file })
