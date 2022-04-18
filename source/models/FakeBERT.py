@@ -2,6 +2,30 @@ import torch.nn as nn
 import numpy as np
 import torch
 import torch.nn.functional as F
+from torch.optim import Adam
+
+def initialize_model(device, embed_dim, filter_sizes, num_filters, num_classes,
+                     dropout=0.2, learning_rate=0.01):
+    """Instantiate a CNN model and an optimizer."""
+
+    assert (len(filter_sizes) == len(num_filters)), "filter_sizes and \
+    num_filters need to be of the same length."
+
+    # Instantiate CNN model
+    cnn_model = FakeBERTCNN(emb_dim=embed_dim,
+                            filter_sizes=filter_sizes,
+                            num_filters=num_filters,
+                            num_classes=num_classes,
+                            dropout_p=dropout)
+    
+    # Send model to `device` (GPU/CPU)
+    cnn_model.to(device)
+
+    # Instantiate Adadelta optimizer
+    # optimizer = Adadelta(cnn_model.parameters(), lr=learning_rate, rho=0.95)
+    optimizer = Adam(cnn_model.parameters(), lr=learning_rate)
+
+    return cnn_model, optimizer
 
 class FakeBERTCNN(nn.Module):
     # def __init__(self, pretrained_embedding, emb_dim, filter_sizes=[3, 4, 5], num_filters=[100, 100, 100], num_classes=2, dropout_p=0.2):
