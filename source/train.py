@@ -2,6 +2,7 @@ import time
 import torch
 from source import evaluate
 from tqdm.notebook import tqdm
+import numpy as np
 
 def train(emb_model, model, loss_fn, optimizer, train_dataloader, val_dataloader=None, epochs=5):
     """Train the CNN model."""
@@ -13,8 +14,11 @@ def train(emb_model, model, loss_fn, optimizer, train_dataloader, val_dataloader
 
     # Start training loop
     print("Start training...\n")
-    print(f"{'Epoch':^7} | {'Train Loss':^12} | {'Val Loss':^10} | {'Val Acc':^9} | {'Elapsed':^9}")
+    print(f"{'Epoch':^7} | {'Train Loss':^12} | {'Train Acc':^11} | {'Val Loss':^10} | {'Val Acc':^9} | {'Elapsed':^9}")
     print("-"*60)
+
+    results = []
+
 
     for epoch_i in range(epochs):
         # =======================================
@@ -24,6 +28,7 @@ def train(emb_model, model, loss_fn, optimizer, train_dataloader, val_dataloader
         # Tracking time and loss
         t0_epoch = time.time()
         total_loss = 0
+        train_acc = []
 
         # Put the model into the training mode
         model.train()
@@ -54,8 +59,16 @@ def train(emb_model, model, loss_fn, optimizer, train_dataloader, val_dataloader
           # Update parameters
           optimizer.step()
 
+          # Get the predictions
+          preds = torch.argmax(logits, dim=1).flatten()
+
+          # Calculate the accuracy rate
+          accuracy = (preds == b_labels).cpu().numpy().mean() * 100
+          train_acc.append(accuracy)
+
         # Calculate the average loss over the entire training data
         avg_train_loss = total_loss / len(train_dataloader)
+        train_acc = np.mean(train_acc)
 
         # =======================================
         #               Evaluation
@@ -71,7 +84,11 @@ def train(emb_model, model, loss_fn, optimizer, train_dataloader, val_dataloader
 
             # Print performance over the entire training data
             time_elapsed = time.time() - t0_epoch
-            print(f"{epoch_i + 1:^7} | {avg_train_loss:^12.6f} | {val_loss:^10.6f} | {val_accuracy:^9.2f} | {time_elapsed:^9.2f}")
+            print(f"{epoch_i + 1:^7} | {avg_train_loss:^12.6f} | {train_acc:^9.2f} | {val_loss:^10.6f} | {val_accuracy:^9.2f} | {time_elapsed:^9.2f}")
+
+            results.append([epoch_i, avg_train_loss, train_acc, val_loss, val_accuracy])
             
     print("\n")
     print(f"Training complete! Best accuracy: {best_accuracy:.2f}%.")
+
+    return np.array(results)

@@ -20,7 +20,7 @@ The class contains a method ('get_data_loader') to return a data_loader for trai
 
 '''
 class bert_data:
-  def __init__(self, data_folder = 'data', train_file = 'train.csv', test_file = 'test.csv', val_file = None, tokenizer_type = 'bert-base-uncased'):
+  def __init__(self, data_folder = 'data', train_file = 'train.csv', test_file = 'test.csv', val_file = None, tokenizer_type = 'bert-base-uncased', data_tokens = None):
 
     #print(os.getcwd())
     self.tokenizer = BertTokenizer.from_pretrained(tokenizer_type)
@@ -34,7 +34,9 @@ class bert_data:
     self.dataset = self.dataset.rename_column("Unnamed: 0", 'id')
 
     self.data_loader = None
-    self.data_tokens = None
+
+    # If data_tokens are not passed in, this will be None
+    self.data_tokens = data_tokens
 
 
 
@@ -59,6 +61,12 @@ class bert_data:
 
   '''
   def tokenize(self, col_tokenize = 'text', add_special_tokens = True, max_length = 64, truncation = True, padding = 'max_length'):
+
+    # If data model was initiated with tokens already, no need to recalculate
+    if self.data_tokens is not None:
+      print('skipping tokenize step and loading saved tokens...')
+      return self.data_tokens
+
     self.data_tokens = self.dataset.map(lambda e: self.tokenizer(e[col_tokenize], \
                     add_special_tokens = add_special_tokens, \
                     max_length = max_length, \
