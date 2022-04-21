@@ -76,7 +76,7 @@ def train(emb_model, model, loss_fn, optimizer, train_dataloader, val_dataloader
         if val_dataloader is not None:
             # After the completion of each training epoch, measure the model's
             # performance on our validation set.
-            val_loss, val_accuracy = evaluate.evaluate(emb_model, model, loss_fn, val_dataloader)
+            val_loss, val_accuracy = evaluate.evaluate(emb_model, model, loss_fn, val_dataloader, bert_layer)
 
             # Track the best accuracy
             if val_accuracy > best_accuracy:

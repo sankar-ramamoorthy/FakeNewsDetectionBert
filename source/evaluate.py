@@ -2,7 +2,7 @@ import torch
 import numpy as np
 from tqdm.notebook import tqdm
 
-def evaluate(emb_model, model, loss_fn, val_dataloader):
+def evaluate(emb_model, model, loss_fn, val_dataloader, bert_layer = 0):
     """After the completion of each training epoch, measure the model's
     performance on our validation set.
     """
@@ -27,7 +27,7 @@ def evaluate(emb_model, model, loss_fn, val_dataloader):
 
         # Get embeddings for current batch
         with torch.no_grad():
-            embeddings = emb_model(b_input_ids, b_mask)[0]
+            embeddings = emb_model(b_input_ids, b_mask)[bert_layer]
 
         # Compute logits
         with torch.no_grad():
