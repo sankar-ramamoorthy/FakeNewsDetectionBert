@@ -79,22 +79,21 @@ class bert_data:
     return self.data_tokens
 
   '''
-  Get train and validation data_loaders. 
-  Expects to receive the train['input_ids'], validation['input_ids], train['label'], validation['label'] as Tensor parameters. 
-  The train/validation inputs will be tensors if generated from the above tokenizer method. 
-
+  Get the data_loader for the dataset in the class, include batch size and optionally a reduced subset for test/troubleshoot
   '''
   def get_data_loader(self, batch_size = 64, test_subset = False):
-    """Load train and validation sets to DataLoader.
+    """Load train, test and validation sets to DataLoader.
     """
 
     # Create DataLoader for training data
     if (test_subset):
-      train_data = Subset(self.data_tokens['train'], list(range(1000)))
-      val_data = Subset(self.data_tokens['test'], list(range(100)))
+      train_data = Subset(self.data_tokens['train'], list(range(700)))
+      val_data = Subset(self.data_tokens['valid'], list(range(200)))
+      test_data = Subset(self.data_tokens['test'], list(range(100)))
     else:
       train_data = self.data_tokens['train']
-      val_data = self.data_tokens['test']
+      val_data = self.data_tokens['valid']
+      test_data = self.data_tokens['test']
 
     train_sampler = RandomSampler(train_data)
     train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=batch_size)
@@ -103,7 +102,11 @@ class bert_data:
     val_sampler = SequentialSampler(val_data)
     val_dataloader = DataLoader(val_data, sampler=val_sampler, batch_size=batch_size)
 
-    return train_dataloader, val_dataloader
+    # Create DataLoader for test data
+    test_sampler = SequentialSampler(test_data)
+    test_dataloader = DataLoader(test_data, sampler=test_sampler, batch_size=batch_size)
+
+    return train_dataloader, val_dataloader, test_dataloader
 
   '''
   Returns initiated tokenizer

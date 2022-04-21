@@ -4,7 +4,7 @@ from source import evaluate
 from tqdm.notebook import tqdm
 import numpy as np
 
-def train(emb_model, model, loss_fn, optimizer, train_dataloader, val_dataloader=None, epochs=5):
+def train(emb_model, model, loss_fn, optimizer, train_dataloader, val_dataloader=None, epochs=5, bert_layer = 0):
     """Train the CNN model."""
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -41,7 +41,7 @@ def train(emb_model, model, loss_fn, optimizer, train_dataloader, val_dataloader
 
           # Get embeddings for current batch
           with torch.no_grad():
-            embeddings = emb_model(b_input_ids, b_mask)[-1]
+            embeddings = emb_model(b_input_ids, b_mask)[bert_layer]
 
           # Zero out any previously calculated gradients
           model.zero_grad()

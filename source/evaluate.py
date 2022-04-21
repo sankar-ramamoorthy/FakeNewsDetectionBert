@@ -27,7 +27,7 @@ def evaluate(emb_model, model, loss_fn, val_dataloader):
 
         # Get embeddings for current batch
         with torch.no_grad():
-            embeddings = emb_model(b_input_ids, b_mask)[-1]
+            embeddings = emb_model(b_input_ids, b_mask)[0]
 
         # Compute logits
         with torch.no_grad():
