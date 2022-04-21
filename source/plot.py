@@ -24,7 +24,7 @@ class experiment_plot():
    
   def plot(self, title_prepend = "", include_points = True):
     self.plot_loss(title_prepend, include_points)
-    self.plot_accuracy(title_prepend)
+    self.plot_accuracy(title_prepend, include_points)
 
   def plot_loss(self, title_prepend="", include_points = True):
     print('epochs: %s \ntrain_loss: %s \nval_loss: %s' % (self.epochs, self.train_loss, self.val_loss))

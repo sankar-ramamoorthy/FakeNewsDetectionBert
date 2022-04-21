@@ -35,13 +35,13 @@ def train(emb_model, model, loss_fn, optimizer, train_dataloader, val_dataloader
         progress_bar = tqdm(train_dataloader, ascii=True)
 
         for step, batch in enumerate(progress_bar):
-
-          # Load batch to GPU
-          b_input_ids, b_labels = tuple(t.to(device) for t in batch)
+          b_input_ids = batch['input_ids'].to(device)
+          b_labels = batch['label'].to(device)
+          b_mask = batch['attention_mask'].to(device)
 
           # Get embeddings for current batch
           with torch.no_grad():
-            embeddings = emb_model(b_input_ids.to(device))[0]
+            embeddings = emb_model(b_input_ids, b_mask)[-1]
 
           # Zero out any previously calculated gradients
           model.zero_grad()
