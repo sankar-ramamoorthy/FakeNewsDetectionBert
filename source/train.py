@@ -86,6 +86,7 @@ def train(emb_model, model, loss_fn, optimizer, train_dataloader, val_dataloader
             # Track the best accuracy
             if val_accuracy > best_accuracy:
                 best_accuracy = val_accuracy
+                emb_model.save_pretrained("mdl")
                 torch.save(model.state_dict(), "mdl1/best_model_dict.pth")
                 torch.save({'epoch': epoch_i,'model_state_dict': model.state_dict(),
                 'optimizer_state_dict': optimizer.state_dict(),
