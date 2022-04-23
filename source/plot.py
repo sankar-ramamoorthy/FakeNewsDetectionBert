@@ -2,12 +2,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 import time
 from adjustText import adjust_text
+import wandb
 
 class experiment_plot():
   '''
   Expects results in the form of np array of [[epoch_no, train_loss, train_acc, val_loss, val_acc]]
   Provide a save location for loss/accuracy curves
-  True/False to append a timestamp at the end of the figure 
+  True/False to append a timestamp at the end of the figure
   '''
   def __init__(self, results, save_name="plot", save_path = 'experiments/figures/', append_time = True):
     self.epochs = results[:,0]
@@ -21,7 +22,7 @@ class experiment_plot():
       self.save_name = save_name + '_' + timestr + '.png'
     else:
       self.save_name = save_name + '.png'
-   
+
   def plot(self, title_prepend = "", include_points = True):
     self.plot_loss(title_prepend, include_points)
     self.plot_accuracy(title_prepend, include_points)
@@ -47,6 +48,7 @@ class experiment_plot():
     plt.legend()
     plt.savefig(self.save_path + 'loss_' + self.save_name)
     plt.show()
+    wandb.log({"chartLoss": plt})
     plt.close()
 
   def plot_accuracy(self, title_prepend="", include_points = True):
@@ -70,4 +72,5 @@ class experiment_plot():
     plt.legend()
     plt.savefig(self.save_path + 'accuracy_' + self.save_name)
     plt.show()
+    wandb.log({"chartAccuracy": plt})
     plt.close()
