@@ -67,6 +67,8 @@ def train(emb_model, model, loss_fn, optimizer, train_dataloader, val_dataloader
           accuracy = (preds == b_labels).cpu().numpy().mean() * 100
           train_acc.append(accuracy)
 
+
+
         # Calculate the average loss over the entire training data
         avg_train_loss = total_loss / len(train_dataloader)
         train_acc = np.mean(train_acc)
@@ -84,6 +86,10 @@ def train(emb_model, model, loss_fn, optimizer, train_dataloader, val_dataloader
             # Track the best accuracy
             if val_accuracy > best_accuracy:
                 best_accuracy = val_accuracy
+                torch.save(model.state_dict(), "mdl1/best_model_dict.pth")
+                torch.save({'epoch': epoch_i,'model_state_dict': model.state_dict(),
+                'optimizer_state_dict': optimizer.state_dict(),
+                'val_loss': val_loss,'val_acc':val_accuracy  }, "mdl1/model.pth"))
 
             # Print performance over the entire training data
             time_elapsed = time.time() - t0_epoch
