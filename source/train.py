@@ -104,7 +104,7 @@ def train(emb_model, model, loss_fn, optimizer, train_dataloader, val_dataloader
                 torch.save(model.state_dict(), best_model_state_dict_file )
                 torch.save({'epoch': epoch_i,'model_state_dict': model.state_dict(),
                 'optimizer_state_dict': optimizer.state_dict(),
-                'val_loss': val_loss,'val_acc':val_accuracy  }, overall_model_state_dict_file))
+                'val_loss': val_loss,'val_acc':val_accuracy  }, overall_model_state_dict_file)
 
             # Print performance over the entire training data
             time_elapsed = time.time() - t0_epoch
