@@ -4,14 +4,28 @@ from source import evaluate
 from tqdm.notebook import tqdm
 import numpy as np
 import wandb
+from pathlib import Path
+import os
 
-def train(emb_model, model, loss_fn, optimizer, train_dataloader, val_dataloader=None, epochs=5, bert_layer = 0):
+def train(emb_model, model, loss_fn, optimizer, train_dataloader, val_dataloader=None, epochs=5, bert_layer = 0,emb_model_save_directory="data/mdl",model_save_directory="data/mdl1"):
     """Train the CNN model."""
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # Tracking best validation accuracy
     best_accuracy = 0
+    emb_model_save_directory = Path(emb_model_save_directory)
+    model_save_directory = Path(model_save_directory)
+    if not os.path.exists(emb_model_save_directory):
+        os.makedirs(emb_model_save_directory)
+    if not os.path.exists(model_save_directory):
+        os.makedirs(model_save_directory)
+    best_model_state_dict_file = model_save_directory/"best_model_dict.pth"
+    overall_model_state_dict_file = model_save_directory/"model.pth"
+
+
+
+
 
     # Start training loop
     print("Start training...\n")
@@ -86,11 +100,12 @@ def train(emb_model, model, loss_fn, optimizer, train_dataloader, val_dataloader
             # Track the best accuracy
             if val_accuracy > best_accuracy:
                 best_accuracy = val_accuracy
-                emb_model.save_pretrained("mdl")
-                torch.save(model.state_dict(), "mdl1/best_model_dict.pth")
+                emb_model.save_pretrained(emb_model_save_directory)
+                torch.save(model.state_dict(), best_model_state_dict_file )
                 torch.save({'epoch': epoch_i,'model_state_dict': model.state_dict(),
                 'optimizer_state_dict': optimizer.state_dict(),
-                'val_loss': val_loss,'val_acc':val_accuracy  }, "mdl1/model.pth")
+                'val_loss': val_loss,'val_acc':val_accuracy  }, overall_model_state_dict_file)
+
 
             # Print performance over the entire training data
             time_elapsed = time.time() - t0_epoch
