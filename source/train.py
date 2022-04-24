@@ -7,7 +7,7 @@ import wandb
 from pathlib import Path
 import os
 
-def train(emb_model, model, loss_fn, optimizer, train_dataloader, val_dataloader=None, epochs=5, bert_layer = 0,emb_model_save_directory="data/mdl",model_save_directory="data/mdl1"):
+def train(emb_model, model, loss_fn, optimizer, train_dataloader, val_dataloader=None, epochs=5, bert_layer = 0,emb_model_save_directory=wandb.run.dir,model_save_directory=wandb.run.dir):
     """Train the CNN model."""
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -95,7 +95,7 @@ def train(emb_model, model, loss_fn, optimizer, train_dataloader, val_dataloader
         if val_dataloader is not None:
             # After the completion of each training epoch, measure the model's
             # performance on our validation set.
-            val_loss, val_accuracy = evaluate.evaluate(emb_model, model, loss_fn, val_dataloader, bert_layer)
+            val_loss, val_accuracy = evaluate.evaluate(emb_model, model, loss_fn, val_dataloader, bert_layer, epoch_i)
 
             # Track the best accuracy
             if val_accuracy > best_accuracy:

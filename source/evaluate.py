@@ -3,7 +3,7 @@ import numpy as np
 from tqdm.notebook import tqdm
 import wandb
 
-def evaluate(emb_model, model, loss_fn, val_dataloader, bert_layer = 0):
+def evaluate(emb_model, model, loss_fn, val_dataloader, bert_layer = 0, epoch_i = 0):
     """After the completion of each training epoch, measure the model's
     performance on our validation set.
     """
@@ -20,11 +20,16 @@ def evaluate(emb_model, model, loss_fn, val_dataloader, bert_layer = 0):
 
     # For each batch in our validation set...
     progress_bar = tqdm(val_dataloader, ascii=True)
-    for batch in progress_bar:
+    for idx, batch in enumerate(progress_bar):
         # Load batch to GPU
         b_input_ids = batch['input_ids'].to(device)
         b_labels = batch['label'].to(device)
         b_mask = batch['attention_mask'].to(device)
+
+        # init empty np array for labels/preds for epoch
+        if (idx == 0):
+          labels = np.array([])
+          predictions = np.array([])
 
         # Get embeddings for current batch
         with torch.no_grad():
@@ -43,15 +48,16 @@ def evaluate(emb_model, model, loss_fn, val_dataloader, bert_layer = 0):
 
         # Calculate the accuracy rate
         accuracy = (preds == b_labels).cpu().numpy().mean() * 100
-        np_labels = b_labels.cpu().numpy()
-        np_preds = preds.cpu().numpy()
+        labels = np.concatenate((labels, b_labels.cpu().numpy()), axis=0)
+        predictions = np.concatenate((predictions, preds.cpu().numpy()), axis=0)
         val_accuracy.append(accuracy)
         #wandb.log({"pr": wandb.plot.pr_curve(np_labels, np_preds )})
         #wandb.log({"roc": wandb.plot.roc_curve(np_labels, np_preds )})
-        cm = wandb.plot.confusion_matrix( y_true=np_labels, preds=np_preds ,class_names=['Real','Fake'])
-        wandb.log({"conf_mat": cm})
 
     # Compute the average accuracy and loss over the validation set.
+    # Get a confusion matrix for the epoch
+    cm = wandb.plot.confusion_matrix( y_true=labels, preds=predictions ,class_names=['Real','Fake'])
+    wandb.log({"conf_mat_epoch" + str(epoch_i): cm})
     val_loss = np.mean(val_loss)
     val_accuracy = np.mean(val_accuracy)
 
