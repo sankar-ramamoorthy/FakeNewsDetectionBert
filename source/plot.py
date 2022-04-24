@@ -47,8 +47,8 @@ class experiment_plot():
     plt.ylabel('Loss')
     plt.legend()
     plt.savefig(self.save_path + 'loss_' + self.save_name)
+    wandb.log({"chartLoss": wandb.Image(plt)})
     plt.show()
-    wandb.log({"chartLoss": plt})
     plt.close()
 
   def plot_accuracy(self, title_prepend="", include_points = True):
@@ -71,6 +71,6 @@ class experiment_plot():
     plt.ylabel('Accuracy')
     plt.legend()
     plt.savefig(self.save_path + 'accuracy_' + self.save_name)
+    wandb.log({"chartAccuracy": wandb.Image(plt)})
     plt.show()
-    wandb.log({"chartAccuracy": plt})
     plt.close()
