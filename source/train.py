@@ -106,6 +106,7 @@ def train(emb_model, model, loss_fn, optimizer, train_dataloader, val_dataloader
                 'optimizer_state_dict': optimizer.state_dict(),
                 'val_loss': val_loss,'val_acc':val_accuracy  }, overall_model_state_dict_file)
 
+
             # Print performance over the entire training data
             time_elapsed = time.time() - t0_epoch
             print(f"{epoch_i + 1:^7} | {avg_train_loss:^12.6f} | {train_acc:^9.2f} | {val_loss:^10.6f} | {val_accuracy:^9.2f} | {time_elapsed:^9.2f}")
