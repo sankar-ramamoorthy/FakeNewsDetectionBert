@@ -3,12 +3,13 @@ import torch
 from source import evaluate
 from tqdm.notebook import tqdm
 import numpy as np
+import wandb
 
 def train(emb_model, model, loss_fn, optimizer, train_dataloader, val_dataloader=None, epochs=5, bert_layer = 0):
     """Train the CNN model."""
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    
+
     # Tracking best validation accuracy
     best_accuracy = 0
 
@@ -66,9 +67,13 @@ def train(emb_model, model, loss_fn, optimizer, train_dataloader, val_dataloader
           accuracy = (preds == b_labels).cpu().numpy().mean() * 100
           train_acc.append(accuracy)
 
+
+
         # Calculate the average loss over the entire training data
         avg_train_loss = total_loss / len(train_dataloader)
         train_acc = np.mean(train_acc)
+        wandb.log({'avg_train_loss':avg_train_loss})
+        wandb.log({'train_acc':train_acc})
 
         # =======================================
         #               Evaluation
@@ -81,13 +86,19 @@ def train(emb_model, model, loss_fn, optimizer, train_dataloader, val_dataloader
             # Track the best accuracy
             if val_accuracy > best_accuracy:
                 best_accuracy = val_accuracy
+                emb_model.save_pretrained("mdl")
+                torch.save(model.state_dict(), "mdl1/best_model_dict.pth")
+                torch.save({'epoch': epoch_i,'model_state_dict': model.state_dict(),
+                'optimizer_state_dict': optimizer.state_dict(),
+                'val_loss': val_loss,'val_acc':val_accuracy  }, "mdl1/model.pth"))
 
             # Print performance over the entire training data
             time_elapsed = time.time() - t0_epoch
             print(f"{epoch_i + 1:^7} | {avg_train_loss:^12.6f} | {train_acc:^9.2f} | {val_loss:^10.6f} | {val_accuracy:^9.2f} | {time_elapsed:^9.2f}")
+            wandb.log({'epoch': epoch_i,'val_accuracy':val_accuracy,'val_loss':val_loss})
 
             results.append([epoch_i, avg_train_loss, train_acc, val_loss, val_accuracy])
-            
+
     print("\n")
     print(f"Training complete! Best accuracy: {best_accuracy:.2f}%.")
 
