@@ -23,10 +23,8 @@ def initialize_model(device, max_len, filter_sizes, num_filters, num_classes,
     cnn_model.to(device)
 
     # Instantiate Adadelta optimizer
-    optimizer = Adadelta(cnn_model.parameters(), lr=learning_rate, rho=0.95)
-    # optimizer = Adam(cnn_model.parameters(), lr=learning_rate)
 
-    return cnn_model, optimizer
+    return cnn_model
 
 class FakeBERTCNN(nn.Module):
     # def __init__(self, pretrained_embedding, emb_dim, filter_sizes=[3, 4, 5], num_filters=[100, 100, 100], num_classes=2, dropout_p=0.2):

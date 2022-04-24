@@ -44,10 +44,10 @@ def evaluate(emb_model, model, loss_fn, val_dataloader, bert_layer = 0):
         # Calculate the accuracy rate
         accuracy = (preds == b_labels).cpu().numpy().mean() * 100
         val_accuracy.append(accuracy)
-        wandb.log({"pr": wandb.plot.pr_curve(b_labels, preds )})
+        '''wandb.log({"pr": wandb.plot.pr_curve(b_labels, preds )})
         wandb.log({"roc": wandb.plot.roc_curve(b_labels, preds )})
-        cm = wandb.plot.confusion_matrix( y_true=b_labels, preds=preds ,class_names=['Real','Fake''])
-        wandb.log({"conf_mat": cm})
+        cm = wandb.plot.confusion_matrix( y_true=b_labels, preds=preds ,class_names=['Real','Fake'])
+        wandb.log({"conf_mat": cm})'''
 
     # Compute the average accuracy and loss over the validation set.
     val_loss = np.mean(val_loss)
