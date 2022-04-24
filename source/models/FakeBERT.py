@@ -22,8 +22,6 @@ def initialize_model(device, max_len, filter_sizes, num_filters, num_classes,
     # Send model to `device` (GPU/CPU)
     cnn_model.to(device)
 
-    # Instantiate Adadelta optimizer
-
     return cnn_model
 
 class FakeBERTCNN(nn.Module):
@@ -31,10 +29,6 @@ class FakeBERTCNN(nn.Module):
     # def __init__(self, emb_dim, filter_sizes=[3, 4, 5], num_filters=[100, 100, 100], num_classes=2, dropout_p=0.2):
     def __init__(self, max_len=100, filter_sizes=[3, 4, 5], num_filters=[100, 100, 100], num_classes=2, dropout_p=0.2):
         super(FakeBERTCNN, self).__init__()
-
-        # self.embedding = nn.Embedding.from_pretrained(pretrained_embedding)
-        # maybe add embedding code here instead of earlier
-        # getting embeddings for each batch (vs. full data 1st) could be more efficience for memory
 
         # CNN
         self.conv1d_list = nn.ModuleList([
