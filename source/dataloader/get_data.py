@@ -1,4 +1,4 @@
-from datasets import load_dataset
+from datasets import load_dataset, Features, Value
 from torch.utils.data import DataLoader, Subset
 from transformers import BertTokenizer
 from torch.utils.data import (TensorDataset, DataLoader, RandomSampler,
@@ -108,6 +108,20 @@ class bert_data:
 
     return train_dataloader, val_dataloader, test_dataloader
 
+  def get_test_data_loader(data_folder = 'data', data_test = 'liar_test_id.csv', max_length = 128, batch_size = 128):
+    test = load_dataset('data', data_files = {'test':'liar_test_id.csv'})
+    test = test.cast_column("label", Value("int8"))
+    tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+
+    test_tokens = test.map(lambda e: tokenizer(e['text'], \
+                        add_special_tokens = True, \
+                        max_length = max_length, \
+                        truncation = True, \
+                        padding = 'max_length'))
+    test_tokens.set_format(type='torch', columns=['input_ids', 'token_type_ids', 'attention_mask', 'label'])
+
+    test_dataloader = DataLoader(test_tokens['test'], batch_size=batch_size)
+    return test_dataloader
   '''
   Returns initiated tokenizer
   '''

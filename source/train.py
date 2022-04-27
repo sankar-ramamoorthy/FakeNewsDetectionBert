@@ -110,7 +110,7 @@ def train(emb_model, model, loss_fn, optimizer, train_dataloader, val_dataloader
             # Print performance over the entire training data
             time_elapsed = time.time() - t0_epoch
             print(f"{epoch_i + 1:^7} | {avg_train_loss:^12.6f} | {train_acc:^9.2f} | {val_loss:^10.6f} | {val_accuracy:^9.2f} | {time_elapsed:^9.2f}")
-            wandb.log({'epoch': epoch_i,'val_accuracy':val_accuracy,'val_loss':val_loss})
+            wandb.log({'time_elapsed': time_elapsed, 'epoch': epoch_i,'train_loss': avg_train_loss, 'train_accuracy': train_acc, 'val_accuracy':val_accuracy,'val_loss':val_loss})
 
             results.append([epoch_i, avg_train_loss, train_acc, val_loss, val_accuracy])
 
